@@ -1,3 +1,4 @@
+hit
 hot
 dot
 dog
@@ -12,3 +13,4 @@ mig
 seg
 nax
 maz
+cog
