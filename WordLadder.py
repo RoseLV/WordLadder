@@ -16,7 +16,8 @@ def build(pattern, words, seen, list):
 def find(word, words, seen, target, path):
   list = []
   for i in range(len(word)):
-    list += build(word[:i] + "." + word[i + 1:], words, seen, list)
+    if word[i] != target[i]:# this will reduce the words in list
+      list += build(word[:i] + "." + word[i + 1:], words, seen, list)
   if len(list) == 0:
     return False# if cannot find any word like the target word, there is no such a path
   list = sorted([(same(w, target), w) for w in list])
