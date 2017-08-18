@@ -39,7 +39,6 @@ while True:
   target = input("Enter target word:")
   break
 
-count = 0
 path = [start]
 seen = {start : True}
 if find(start, words, seen, target, path):
