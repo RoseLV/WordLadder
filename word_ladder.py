@@ -40,19 +40,37 @@ def find(word, words, seen, target, path):
     print(2)
     print(path)
 
-
 while True:
-  fname = input("Enter dictionary name: ") # 先输入词典名
-  file = open(fname)
-  lines = file.readlines()
-  start = input("Enter start word:")       # 再输入起始单词
-  words = []  # 紧接着找出所以长度一样的单词添加到words里；an array of all same length word, for limiting the search scope
-  for line in lines:
-    word = line.rstrip()
-    if len(word) == len(start):
-      words.append(word)
-  target = input("Enter target word:")     # 再输入目标单词
-  break
+
+  try:
+    fname = input("Enter dictionary name: ") # 先输入词典名
+    file = open(fname)
+    lines = file.readlines()
+    start = input("Enter start word:")
+    words = []  # 紧接着找出所以长度一样的单词添加到words里；an array of all same length word, for limiting the search scope
+    for line in lines:
+      word = line.rstrip()
+      if len(word) == len(start):
+        words.append(word)
+    if start not in words:
+      print(start + " is not in the dictionary, please try another one.")
+      continue
+    target = input("Enter target word:")  # 再输入目标单词
+    if len(target) != len(start):
+      print(target + " must have same length as start, please try another one.")
+      continue
+    if target not in words:
+      print(target + " is not in the dictionary, please try another one.")
+      continue
+    break
+  except IOError:
+    print("This word is not in the dictionary, please try another one.")
+
+
+
+         # 再输入起始单词
+
+
 #count = 0
 
 path = [start]  # User input start         # path始于start
