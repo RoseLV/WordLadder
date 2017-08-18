@@ -20,7 +20,7 @@ def find(word, words, seen, target, path):
       list += build(word[:i] + "." + word[i + 1:], words, seen, list)
   if len(list) == 0:
     return False# if cannot find any word like the target word, there is no such a path
-  list = sorted([(same(w, target), w) for w in list])
+  list = sorted([(same(w, target), w) for w in list], reverse=True) # sorted in decrease order so that it is easier to choose the shorest way.
   for (match, item) in list:
     if match >= len(target) - 1: #if not the same and there is one or more letters different.
       if match == len(target) - 1:#if only one word
