@@ -3,23 +3,26 @@ import re
 def same(item, target):
   return len([c for (c, t) in zip(item, target) if c == t])
 
-def build(pattern, words, seen, list):
-  return [word for word in words # an array of all same length word
+def build(pattern, words, seen, list):        # return list[]
+  return [word for word in words              # words[]:an array of all same length word
   if re.search(pattern, word) and word not in seen.keys() and word not in list]
   # re.search = match                list[] : 从0到length的某一位和word有一位不一样的
 
 def find(word, words, seen, target, path):
+
   list = []  # 从0到length的某一位和word有一位不一样的
   for i in range(len(word)):
     if word[i] != target[i]:  # this will reduce the words in list
       list += build(word[:i] + "." + word[i + 1:], words, seen, list)
-  if len(list) == 0:
+
+  if len(list) == 0:  # if len(list) = 0 说明断线了
     return False   # if cannot find any word like the target word, there is no such a path
 
   if target in list:  # this will make the search more efficient
     return True    # this will make the search more efficient
+
   list = sorted([(same(w, target), w) for w in list], reverse=True)
-  print(3)
+  #print(3)
   print(list)
   # sorted in decrease order so that it is easier to choose the shorest way.
 
@@ -34,11 +37,16 @@ def find(word, words, seen, target, path):
 
   for (match, item) in list:
     path.append(item)
+    #print(4)
+    #print(path)
     if find(item, words, seen, target, path):
       return True
     path.pop()
-    print(2)
-    print(path)
+    #print(2)
+    #print(path)
+
+
+
 
 while True:
 
@@ -66,15 +74,10 @@ while True:
   except IOError:
     print("This word is not in the dictionary, please try another one.")
 
-
-
-         # 再输入起始单词
-
-
 #count = 0
 
 path = [start]  # User input start         # path始于start
-seen = {start: True}  # have already seen this word    {DICTIONARY KEY:START, VALUE:TRUE}
+seen = {start: True}  # {DICTIONARY KEY:START, VALUE:TRUE} #avoid repeated word in the list
 if find(start, words, seen, target, path):
   path.append(target)   # append target one by one 一层一层加
   print(len(path) - 1, path)
