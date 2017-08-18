@@ -71,8 +71,13 @@ if choice1.lower() == 'yes':
         break
 path = [start]
 seen = {start : True} # have already seen this word
-if find(start, words, seen, target, path):
-  path.append(target)
-  print(len(path) - 1, path)
+choice2 = input("Do you want the shorest way? Please enter yes or no.")
+if choice2.lower() == 'yes':
+    final = sfind(start, words, seen, target, path)
 else:
-  print("No path found")
+    final = find(start, words, seen, target, path)
+if final:
+    path.append(target)
+    print(len(path) - 1, path)
+else:
+    print("No path found")
