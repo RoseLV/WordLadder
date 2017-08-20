@@ -1,86 +1,143 @@
 import re
-# same方法return对上号的字母 越大越好，所以后面用reverse排列。return the length of the same letter on same position
-def same(item, target):
-  return len([c for (c, t) in zip(item, target) if c == t])
 
-def build(pattern, words, seen, list):        # return list[]
-  return [word for word in words              # words[]:an array of all same length word
-  if re.search(pattern, word) and word not in seen.keys() and word not in list]
-  # re.search = match                list[] : 从0到length的某一位和word有一位不一样的
+# same方法return对上号的字母 越大越好，所以后面用reverse排列。
+def same(item, target):
+    """
+    :param item: word in words
+    :param target: user input target
+    :return: length of the same letter on same position between item and target.
+    """
+    return len([c for (c, t) in zip(item, target) if c == t])
+
+def build(pattern, words, seen, list):
+    """
+    :param pattern: regular expression to find out match or not
+    :param words: An array has all same length words with start word
+    :param seen: dictionary has the seen word as key, and True as value
+    :param list: a list of tuple has same() as the first element in an reversed order, and the words as second element.
+    :return: return list[] which contains the words with one letter differ from the word.
+    """
+    return [word for word in words
+    if re.search(pattern, word) and word not in seen.keys() and word not in list]
+    # re.search = match
 
 def find(word, words, seen, target, path):
+    """
+    :param word: each word in the dictionary
+    :param words: An array has all same length words with start word
+    :param seen: dictionary has the seen word as key, and True as value
+    :param target:  target word
+    :param path: the path from start word to the target word
+    :return: True/ False
+    """
+    list = []
+    for i in range(len(word)):
+        if word[i] != target[i]:  # this will reduce the words in list
+            list += build(word[:i] + "." + word[i + 1:], words, seen, list)
+            print("2")
+            print(list)
 
-  list = []  # 从0到length的某一位和word有一位不一样的
-  for i in range(len(word)):
-    if word[i] != target[i]:  # this will reduce the words in list
-      list += build(word[:i] + "." + word[i + 1:], words, seen, list)
+    # In the loop, any step len(list)==0 means there is no path.
+    if len(list) == 0:
+        return False
 
-  if len(list) == 0:  # if len(list) = 0 说明断线了
-    return False   # if cannot find any word like the target word, there is no such a path
+    # In the loop, once the target is found in the list, one path is found.
+    if target in list:
+        return True
 
-  if target in list:  # this will make the search more efficient
-    return True    # this will make the search more efficient
+    # sorted in decrease order so that it is easier to choose the shortest way.
+    list = sorted([(same(w, target), w) for w in list], reverse=True)
 
-  list = sorted([(same(w, target), w) for w in list], reverse=True)
-  #print(3)
-  print(list)
-  # sorted in decrease order so that it is easier to choose the shorest way.
 
-  for (match, item) in list:
-    if match >= len(target) - 1:  # if not the same and there is one or more letters different.
-      if match == len(target) - 1:  # if only one word #如果只有一位和target不一样了，eg：len（target）=4， match=3；
+    for (match, item) in list:
+        if match >= len(target) - 1:  # if not the same and there is one or more letters different.
+            if match == len(target) - 1:  # only one letter differ from target，eg：len（target）=4, match=3；
+                path.append(item)
+            return True
+        seen[item] = True
+
+    for (match, item) in list:
         path.append(item)
-        print('1')
-        print(path)# add this word to path
-      return True
-    seen[item] = True
-
-  for (match, item) in list:
-    path.append(item)
-    #print(4)
-    #print(path)
-    if find(item, words, seen, target, path):
-      return True
-    path.pop()
-    #print(2)
-    #print(path)
+        if find(item, words, seen, target, path):
+            return True
+        path.pop()
 
 
-
-
-while True:
-
-  try:
-    fname = input("Enter dictionary name: ") # 先输入词典名
-    file = open(fname)
+def get_dictionary(fileName):
+    """
+    :param fileName: file name, user input
+    :return: each line in the file
+    """
+    file = open(fileName)
     lines = file.readlines()
-    start = input("Enter start word:")
-    words = []  # 紧接着找出所以长度一样的单词添加到words里；an array of all same length word, for limiting the search scope
+    return lines
+
+
+def start(start, lines):
+    """
+    :param start: start word, user input
+    :param lines: each line in the file
+    :return: start, words
+    """
+    words = []
     for line in lines:
-      word = line.rstrip()
-      if len(word) == len(start):
-        words.append(word)
+        word = line.rstrip()
+        if len(word) == len(start):
+            words.append(word)
+
     if start not in words:
-      print(start + " is not in the dictionary, please try another one.")
-      continue
-    target = input("Enter target word:")  # 再输入目标单词
-    if len(target) != len(start):
-      print(target + " must have same length as start, please try another one.")
-      continue
-    if target not in words:
-      print(target + " is not in the dictionary, please try another one.")
-      continue
-    break
-  except IOError:
-    print("This word is not in the dictionary, please try another one.")
+        raise ValueError(start + " is not in the dictionary, please try another one.")
+    return start, words
 
-#count = 0
 
-path = [start]  # User input start         # path始于start
-seen = {start: True}  # {DICTIONARY KEY:START, VALUE:TRUE} #avoid repeated word in the list
-if find(start, words, seen, target, path):
-  path.append(target)   # append target one by one 一层一层加
-  print(len(path) - 1, path)
-else:
-  print("No path found")
+def target(target, start, words):
+    """
+    :param target: target words
+    :param start: start words
+    :param words: word list has all the same length words as the start word in the file
+    :return: target word
+    """
+    if len(target) != len(start) or target not in words:
+        raise ValueError(target + " is not same length with start word or not in the list, please try another one.")
+    return target
+
+
+def find_path(start, target):
+    """
+    :param start: start word
+    :param target: target word
+    :return: path length, path/ "No path found"
+    """
+    path = [start]  # User input start
+    seen = {start: True}  # {DICTIONARY KEY:START, VALUE:TRUE} #avoid repeated word in the list
+    if find(start, words, seen, target, path):
+        path.append(target)  # append target one by one 一层一层加
+        print(len(path) - 1, path)
+    else:
+        print("No path found")
+
+
+if __name__ == '__main__':
+
+    while True:
+
+        try:
+            lines = get_dictionary(input("Enter dictionary name: "))
+        except:
+            print("This word is not in the dictionary, please try another one.")
+            continue
+
+        try:
+            start_word, words = start(input("Enter start word: "), lines)
+        except:
+            print("try another one")
+            continue
+
+        try:
+            target_word = target(input("Enter target word: "), start_word, words)
+        except:
+            print(target_word + " must have same length as start and in the dictionary, please try another one.")
+            continue
+
+        find_path(start_word, target_word)
 

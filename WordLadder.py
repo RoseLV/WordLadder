@@ -36,35 +36,36 @@ def find(word, words, seen, target, path):
       return True
     path.pop()# if not delete this word from path and go back to upper level
 
-while True:
+if __name__ == '__main__':
+  while True:
 
-  try:
-    fname = input("Enter dictionary name: ")
-    file = open(fname)
-    lines = file.readlines()
-    start = input("Enter start word:")
-    words = []
-    for line in lines:
-      word = line.rstrip()
-      if len(word) == len(start):
-        words.append(word)
-    if start not in words:
-      print(start + " is not in the dictionary, please try another one.")
-      continue
-    target = input("Enter target word:")
-    if len(target) != len(start):
-      print(target + " must have same length as start, please try another one.")
-      continue
-    if target not in words:
-      print(target + " is not in the dictionary, please try another one.")
-      continue
-    break
-  except IOError:
-    print("This word is not in the dictionary, please try another one.")
-path = [start]
-seen = {start : True} # have already seen this word
-if find(start, words, seen, target, path):
-  path.append(target)
-  print(len(path) - 1, path)
-else:
-  print("No path found")
+    try:
+      fname = input("Enter dictionary name: ")
+      file = open(fname)
+      lines = file.readlines()
+      start = input("Enter start word:")
+      words = []
+      for line in lines:
+        word = line.rstrip()
+        if len(word) == len(start):
+          words.append(word)
+      if start not in words:
+        print(start + " is not in the dictionary, please try another one.")
+        continue
+      target = input("Enter target word:")
+      if len(target) != len(start):
+        print(target + " must have same length as start, please try another one.")
+        continue
+      if target not in words:
+        print(target + " is not in the dictionary, please try another one.")
+        continue
+      break
+    except IOError:
+      print("This word is not in the dictionary, please try another one.")
+  path = [start]
+  seen = {start : True} # have already seen this word
+  if find(start, words, seen, target, path):
+    path.append(target)
+    print(len(path) - 1, path)
+  else:
+    print("No path found")
